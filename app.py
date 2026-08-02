@@ -106,7 +106,7 @@ with tab1:
 
     if uploaded_file is not None:
         image = Image.open(uploaded_file).convert("RGB")
-        st.image(image, caption="Gambar yang diupload", use_container_width=True)
+        st.image(image, caption="Gambar yang diupload", use_column_width=True)
 
         if st.button("Prediksi", key="btn_upload"):
             with st.spinner("Sedang memproses..."):
