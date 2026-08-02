@@ -4,6 +4,7 @@ import numpy as np
 import streamlit as st
 import tensorflow as tf
 from PIL import Image
+from huggingface_hub import hf_hub_download
 
 # ======================================================
 # KONFIGURASI HALAMAN
@@ -26,15 +27,17 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ======================================================
-# PATH MODEL & LABEL MAP (satu folder dengan app.py)
+# KONFIGURASI MODEL DI HUGGING FACE
 # ======================================================
+HF_REPO_ID = "mada19/mencoba"
+HF_MODEL_FILENAME = "model_klasifikasi_sampah.h5"
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "model_klasifikasi_sampah.h5")
 LABEL_MAP_PATH = os.path.join(BASE_DIR, "label_map.json")
 IMG_SIZE = (150, 150)
 
 # ======================================================
-# LOAD LABEL MAP
+# LOAD LABEL MAP (tetap dari repo GitHub, file kecil)
 # ======================================================
 @st.cache_resource
 def load_label_map():
@@ -44,15 +47,26 @@ def load_label_map():
 label_map = load_label_map()  # contoh: {"0": "Organik", "1": "Anorganik"}
 
 # ======================================================
+# DOWNLOAD MODEL DARI HUGGING FACE
+# ======================================================
+@st.cache_resource
+def get_model_path():
+    return hf_hub_download(
+        repo_id=HF_REPO_ID,
+        filename=HF_MODEL_FILENAME
+    )
+
+# ======================================================
 # LOAD MODEL
 # ======================================================
 @st.cache_resource
 def load_ml_model():
     try:
-        model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+        model_path = get_model_path()
+        model = tf.keras.models.load_model(model_path, compile=False)
         return model
     except Exception as e:
-        st.error(f"❌ Gagal memuat model:\n\n{e}")
+        st.error(f"❌ Gagal memuat model dari Hugging Face:\n\n{e}")
         st.stop()
 
 model = load_ml_model()
