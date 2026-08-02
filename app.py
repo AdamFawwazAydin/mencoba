@@ -105,7 +105,7 @@ with tab1:
     )
 
     if uploaded_file is not None:
-        image = Image.open(uploaded_file)
+        image = Image.open(uploaded_file).convert("RGB")
         st.image(image, caption="Gambar yang diupload", use_container_width=True)
 
         if st.button("Prediksi", key="btn_upload"):
@@ -128,7 +128,7 @@ with tab2:
     camera_input = st.camera_input("Ambil gambar sampah")
 
     if camera_input is not None:
-        image = Image.open(camera_input)
+        image = Image.open(camera_input).convert("RGB")
 
         with st.spinner("Sedang memproses..."):
             label, score = predict_image(image)
